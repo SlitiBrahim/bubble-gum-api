@@ -1,0 +1,32 @@
+{
+  "name": "bubble-gum-api",
+  "version": "1.0.0",
+  "description": "Node API for the BubbleGum project",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SlitiBrahim/bubble-gum-api.git"
+  },
+  "keywords": [
+    "api",
+    "node",
+    "bubblegum"
+  ],
+  "author": "SLITI Brahim <brahim.sliti@supinfo.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SlitiBrahim/bubble-gum-api/issues"
+  },
+  "homepage": "https://github.com/SlitiBrahim/bubble-gum-api#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  }
+}
