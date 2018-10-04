@@ -25,6 +25,8 @@ services:
         depends_on:
             - db
             - maildev
+        environment:
+            APP_PORT: 8080
     web:
         image: nginx:1.15
         volumes:
