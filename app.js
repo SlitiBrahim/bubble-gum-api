@@ -3,8 +3,10 @@ const express = require('express');
 const app = express();
 // Controllers
 const userController = require('./components/user/userController');
+const postController = require('./components/post/postController');
 
 app.use('/users', userController);
+app.use('/posts', postController);
 
 // In case any controller was matched throw an error
 app.use((req, res) => {
