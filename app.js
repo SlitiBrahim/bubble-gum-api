@@ -6,11 +6,13 @@ const userController = require('./components/user/userController');
 const postController = require('./components/post/postController');
 const voteController = require('./components/vote/voteController');
 const viewController = require('./components/view/viewController');
+const profileController = require('./components/profile/profileController');
 
 app.use('/users', userController);
 app.use('/posts', postController);
 app.use('/votes', voteController);
 app.use('/views', viewController);
+app.use('/profiles/', profileController);
 
 // In case any controller was matched throw an error
 app.use((req, res) => {
