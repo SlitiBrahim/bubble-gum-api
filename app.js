@@ -5,10 +5,12 @@ const app = express();
 const userController = require('./components/user/userController');
 const postController = require('./components/post/postController');
 const voteController = require('./components/vote/voteController');
+const viewController = require('./components/view/viewController');
 
 app.use('/users', userController);
 app.use('/posts', postController);
 app.use('/votes', voteController);
+app.use('/views', viewController);
 
 // In case any controller was matched throw an error
 app.use((req, res) => {
