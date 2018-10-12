@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/SlitiBrahim/bubble-gum-api#readme",
   "dependencies": {
+    "dotenv": "^6.1.0",
     "express": "^4.16.3",
     "pg": "^7.5.0",
     "pg-hstore": "^2.3.2",

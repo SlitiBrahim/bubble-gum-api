@@ -1,18 +1,9 @@
 const config = {
-    dev: {
-        user: 'bubblegum',
-        pass: 'bubblegum',
-        host: 'db',
-        port: 5432,
-        name: 'bubblegum'
-    },
-    prod: {
-        user: '',
-        pass: '',
-        host: '',
-        port: 5432,
-        name: 'bubblegum'
-    }
+    user: process.env.DB_USER,
+    pass: process.env.DB_PASS,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    name: process.env.DB_NAME
 };
 
 module.exports = config;

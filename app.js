@@ -1,5 +1,10 @@
 const express = require('express');
 const Sequelize = require('sequelize');
+const dotenv = require('dotenv');
+
+// load .env file variable declarations into process.env
+const envParse = dotenv.config();
+if (envParse.error) { throw envParse.error; }
 
 const app = express();
 const config = require('./config/config');
