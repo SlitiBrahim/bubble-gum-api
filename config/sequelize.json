@@ -1,0 +1,23 @@
+{
+    "dev": {
+      "username": "bubblegum",
+      "password": "bubblegum",
+      "database": "bubblegum",
+      "host": "db",
+      "dialect": "postgres"
+    },
+    "test": {
+      "username": "bubblegum",
+      "password": "bubblegum",
+      "database": "bubblegum",
+      "host": "db",
+      "dialect": "postgres"
+    },
+    "prod": {
+      "username": "bubblegum",
+      "password": "bubblegum",
+      "database": "bubblegum",
+      "host": "db",
+      "dialect": "postgres"
+    }
+}
