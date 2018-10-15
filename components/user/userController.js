@@ -1,16 +1,28 @@
 const express = require('express');
 const router = express.Router();
 
+const userRepo = require('./userRepository');
+
 router
     .get('/', (req, res) => {
-        // get users
-        res.send('GET /users/');
+        userRepo.getAll()
+            .then(users => {
+                res.status(200).json(users)
+            })
+            .catch(err => {
+                res.status(err.statusCode).json({ error: err });
+            });
     })
 
     .get('/:id', (req, res) => {
         const id = req.params.id;
-        // get user
-        res.send('GET /users/' + id);
+        userRepo.getOne(id)
+            .then(user => {
+                res.status(200).json(user);
+            })
+            .catch(err => {
+                res.status(err.statusCode).json({ error: err });
+            });
     })
 
     .post('/', (req, res) => {
