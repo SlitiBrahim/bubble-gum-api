@@ -34,4 +34,17 @@ userRepo.getOne = (id) => {
     });
 }
 
+userRepo.create = (properties) => {
+    return new Promise((resolve, reject) => {
+        User.create(properties)
+            .then(createdUser => {
+                resolve(createdUser);
+            })
+            .catch(err => {
+                console.error("ERROR", err);
+                reject(new HttpError({ message: err.message, statusCode: 400 }));
+            });
+    });
+}
+
 module.exports = userRepo;

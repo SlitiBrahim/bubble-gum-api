@@ -24,7 +24,10 @@ module.exports = (sequelize, DataTypes) => {
     birthdayDate: {
       type: DataTypes.DATE
     }
-  }, {});
+  }, {
+    // set deletedAt attribute when deleteing instance (softDeletable)
+    paranoid: true
+  });
   user.associate = function(models) {
     // associations can be defined here
   };

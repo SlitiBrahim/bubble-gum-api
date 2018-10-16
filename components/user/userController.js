@@ -38,8 +38,13 @@ router
 
     .delete('/:id', (req, res) => {
         const id = req.params.id;
-        // delete user
-        res.send('DELETE /users/' + id);
+        userRepo.delete(id)
+            .then(deletedUser => {
+                res.status(200).json({ deletedUser });
+            })
+            .catch(err => {
+                res.status(err.statusCode).json({ error: err });
+            });
     })
 
     .put('/:id', (req, res) => {
