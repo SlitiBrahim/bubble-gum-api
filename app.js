@@ -1,5 +1,4 @@
 const express = require('express');
-const Sequelize = require('sequelize');
 const dotenv = require('dotenv');
 
 // load .env file variable declarations into process.env
@@ -8,8 +7,6 @@ if (envParse.error) { throw envParse.error; }
 
 const app = express();
 const config = require('./config/config');
-
-const sequelize = new Sequelize(`postgres://${config.db.user}:${config.db.pass}@${config.db.host}:${config.db.port}/${config.db.name}`);
 
 // Controllers
 const userController = require('./components/user/userController');
