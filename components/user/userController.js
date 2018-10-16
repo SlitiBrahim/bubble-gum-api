@@ -26,8 +26,14 @@ router
     })
 
     .post('/', (req, res) => {
-        // create a new user
-        res.send('POST /users/');
+        const params = req.body;
+        userRepo.create(params)
+            .then(createdUser => {
+                res.status(201).json({ createdUser });
+            })
+            .catch(err => {
+                res.status(err.statusCode).json({ error : err });
+            });
     })
 
     .delete('/:id', (req, res) => {

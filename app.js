@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
 
 // load .env file variable declarations into process.env
 const envParse = dotenv.config();
@@ -7,6 +8,11 @@ if (envParse.error) { throw envParse.error; }
 
 const app = express();
 const config = require('./config/config');
+
+// parse application/x-www-form-urlencoded data, extended :true allows rich data obj to be parsed
+app.use(bodyParser.urlencoded({ extended: true }));
+// parse request whith application/json content-type
+app.use(bodyParser.json());
 
 // Controllers
 const userController = require('./components/user/userController');
