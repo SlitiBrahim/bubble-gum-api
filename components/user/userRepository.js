@@ -47,4 +47,24 @@ userRepo.create = (properties) => {
     });
 }
 
+
+userRepo.delete = (id) => {
+    return new Promise((resolve, reject) => {
+        userRepo.getOne(id)
+            .then(user => {
+                return user.destroy();
+            })
+            .then(deletedUser => {
+                resolve(deletedUser);
+            })
+            .catch(err => {
+                console.error("ERROR", err);
+                reject(new HttpError({
+                    message: `An exception occured when wanted to delete user with id ${id}.`,
+                    statusCode: 400
+                }));
+            });
+    });
+}
+
 module.exports = userRepo;
