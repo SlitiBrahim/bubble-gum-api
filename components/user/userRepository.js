@@ -66,4 +66,20 @@ userRepo.delete = (id) => {
     });
 }
 
+userRepo.update = (id, properties) => {
+    return new Promise((resolve, reject) => {
+        userRepo.getOne(id)
+            .then(user => {
+                return user.update(properties);
+            })
+            .then(updatedUser => {
+                resolve(updatedUser);
+            })
+            .catch(err => {
+                console.log("ERROR", err);
+                reject(err);
+            });
+    });
+}
+
 module.exports = userRepo;

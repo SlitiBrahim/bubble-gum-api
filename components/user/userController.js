@@ -49,8 +49,15 @@ router
 
     .put('/:id', (req, res) => {
         const id = req.params.id;
-        // alter user
-        res.send('PUT /users/' + id);
+        const params = req.body;
+        
+        userRepo.update(id, params)
+            .then(updatedUser => {
+                res.status(200).json({ updatedUser });
+            })
+            .catch(err => {
+                res.status(err.statusCode).json({ error: err });
+            });
     })
 ;
 
