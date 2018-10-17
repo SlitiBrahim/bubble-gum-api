@@ -23,6 +23,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     birthdayDate: {
       type: DataTypes.DATE
+    },
+    isDeleted: {
+      type: DataTypes.VIRTUAL,
+      get () {
+        return this.deletedAt !== null
+      }
     }
   }, {
     // set deletedAt attribute when deleteing instance (softDeletable)

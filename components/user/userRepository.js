@@ -47,7 +47,6 @@ userRepo.create = (properties) => {
     });
 }
 
-
 userRepo.delete = (id) => {
     return new Promise((resolve, reject) => {
         userRepo.getOne(id)
