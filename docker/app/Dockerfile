@@ -1,8 +1,11 @@
-FROM node:10-alpine
+FROM node:10
 
 WORKDIR /home/docker
 
-RUN npm install && \
-    npm cache clean --force
+COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+
+RUN chmod +x /usr/local/bin/docker-entrypoint
+
+ENTRYPOINT ["docker-entrypoint"]
 
 CMD ["npm", "run", "dev"]
