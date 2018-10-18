@@ -7,7 +7,7 @@ router
     .get('/', (req, res) => {
         userRepo.getAll()
             .then(users => {
-                res.status(200).json(users)
+                res.status(200).json({ users })
             })
             .catch(err => {
                 res.status(err.statusCode).json({ error: err });
