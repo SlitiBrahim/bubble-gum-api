@@ -1,4 +1,12 @@
 'use strict';
+
+/*
+    This file contains validation for User model
+
+    That validation is used in userValidate file,
+    so be sure to reflect any modification in components/user/userValidate file
+*/
+
 module.exports = (sequelize, DataTypes) => {
   const user = sequelize.define('user', {
     email: {

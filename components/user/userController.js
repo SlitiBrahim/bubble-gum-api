@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const validate = require('express-validation');
 
 const userRepo = require('./userRepository');
+const validation = require('./userValidate');
 
 router
     .get('/', (req, res) => {
@@ -14,7 +16,7 @@ router
             });
     })
 
-    .get('/:id', (req, res) => {
+    .get('/:id', validate(validation.getUser), (req, res) => {
         const id = req.params.id;
         userRepo.getOne(id)
             .then(user => {
@@ -25,7 +27,7 @@ router
             });
     })
 
-    .post('/', (req, res) => {
+    .post('/', validate(validation.createUser), (req, res) => {
         const params = req.body;
         userRepo.create(params)
             .then(createdUser => {
@@ -36,7 +38,7 @@ router
             });
     })
 
-    .delete('/:id', (req, res) => {
+    .delete('/:id', validate(validation.getUser), (req, res) => {
         const id = req.params.id;
         userRepo.delete(id)
             .then(deletedUser => {
@@ -47,7 +49,7 @@ router
             });
     })
 
-    .put('/:id', (req, res) => {
+    .put('/:id', validate(validation.getUser), validate(validation.updateUser), (req, res) => {
         const id = req.params.id;
         const params = req.body;
         
