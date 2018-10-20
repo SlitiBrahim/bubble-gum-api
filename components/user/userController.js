@@ -5,6 +5,11 @@ const validate = require('express-validation');
 const userRepo = require('./userRepository');
 const validation = require('./userValidate');
 
+// function that return a 405 error (method not allowed)
+function methodNotAllowed(req, res) {
+    res.status(405).json({ error: "Method not allowed for that route" });
+}
+
 router.route('/')
     .get((req, res) => {
         userRepo.getAll()
@@ -25,6 +30,9 @@ router.route('/')
                 res.status(err.statusCode).json({ error : err });
             });
     })
+
+    // In case method was not matched (= method not allowed)
+    .all((req, res) => methodNotAllowed(req, res))
 ;
 
 router.route('/:id')
@@ -60,6 +68,9 @@ router.route('/:id')
                 res.status(err.statusCode).json({ error: err });
             });
     })
+
+    // In case method was not matched (= method not allowed)
+    .all((req, res) => methodNotAllowed(req, res))
 ;
 
 module.exports = router;
