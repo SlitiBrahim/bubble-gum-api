@@ -58,10 +58,7 @@ userRepo.delete = (id) => {
             })
             .catch(err => {
                 console.error("ERROR", err);
-                reject(new HttpError({
-                    message: `An exception occured when wanted to delete user with id ${id}.`,
-                    statusCode: 400
-                }));
+                reject(err);
             });
     });
 }
