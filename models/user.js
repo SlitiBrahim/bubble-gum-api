@@ -1,10 +1,8 @@
 'use strict';
 
 /*
-    This file contains validation for User model
-
-    That validation is used in userValidate file,
-    so be sure to reflect any modification in components/user/userValidate file
+    The validation is implemented in userValidate file
+    which checks for request parameters and request payloads on user model
 */
 
 module.exports = (sequelize, DataTypes) => {
@@ -13,57 +11,24 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      validate: {
-        isEmail: {
-          msg: "email must be an email address"
-        }
-      }
     },
     username: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      validate: {
-        len: {
-          args: [4, 15],
-          msg: "username length should be of mimimum of 4 characters and maximum of 15 characters"
-        }
-      }
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        is: {
-          // minlength 8, maxlength 128, alphanumeric characters
-          args: /^[a-zA-Z0-9]{8,128}/,
-          msg: "password length must be of minimum of 8 characters, it could include lowercase and uppercase alphabetic characters, numbers and symbols"
-        }
-      }
     },
     deletedAt: {
       type: DataTypes.DATE,
-      validate: {
-        isDate: {
-          msg: "deletedAt must be of type of date"
-        }
-      }
     },
     bannedAt: {
       type: DataTypes.DATE,
-      validate: {
-        isDate: {
-          msg: "bannedAt must be of type of date"
-        }
-      }
     },
     birthdayDate: {
       type: DataTypes.DATE,
-      validate: {
-        isDate: {
-          msg: "birthdayDate must be of type of date"
-        }
-      }
     },
     isDeleted: {
       type: DataTypes.VIRTUAL,
