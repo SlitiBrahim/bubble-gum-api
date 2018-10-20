@@ -5,7 +5,7 @@ const userRepo = {};
 
 userRepo.getAll = () => {
     return new Promise((resolve, reject) => {
-        User.findAll({ attributes: { exclude: ['password'] } })
+        User.findAll()
             .then(users => {
                 resolve(users);
             })
@@ -18,7 +18,7 @@ userRepo.getAll = () => {
 
 userRepo.getOne = (id) => {
     return new Promise((resolve, reject) => {
-        User.findById(id, { attributes: { exclude: ['password'] } })
+        User.findById(id)
             .then(user => {
                 // user was not found, trigger catch statement
                 if (!user) {
@@ -73,6 +73,9 @@ userRepo.update = (id, properties) => {
                 return user.update(properties);
             })
             .then(updatedUser => {
+                // exclude password property to be returned
+                delete updatedUser.dataValues.password;
+
                 resolve(updatedUser);
             })
             .catch(err => {
