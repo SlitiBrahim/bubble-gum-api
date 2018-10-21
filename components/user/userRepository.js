@@ -34,16 +34,70 @@ userRepo.getOne = (id) => {
     });
 }
 
+userRepo.getOneByEmail = (email) => {
+    return new Promise((resolve, reject) => {
+        User.findAll({
+            where: { email }
+        })
+        .then(user => {
+            // check that a user is returned and not an empty array
+            if (user.length) {
+                resolve(user);
+            } else {
+                throw new HttpError({ message: `User not found with email ${email}`, statusCode: 404 });
+            }
+        })
+        .catch(err => {
+            reject(err);
+        })
+    });
+}
+
+userRepo.getOneByUsername = (username) => {
+    return new Promise((resolve, reject) => {
+        User.findAll({
+            where: { username }
+        })
+        .then(user => {
+            // check that a user is returned and not an empty array
+            if (user.length) {
+                resolve(user);
+            } else {
+                throw new HttpError({ message: `User not found with username ${username}`, statusCode: 404 });
+            }
+        })
+        .catch(err => {
+            reject(err);
+        })
+    });
+}
+
 userRepo.create = (properties) => {
     return new Promise((resolve, reject) => {
-        User.create(properties)
-            .then(createdUser => {
-                resolve(createdUser);
+        userRepo.getOneByUsername(properties.username)
+            .then(() => {
+                // username is already taken, return error since it should be unique
+                reject(new HttpError({ message: `username "${properties.username}" is already taken`, statusCode: 409 }));
             })
-            .catch(err => {
-                console.error("ERROR", err);
-                reject(new HttpError({ message: err.message, statusCode: 400 }));
-            });
+            .catch(() => {
+                // username is not taken, process to email verification
+                userRepo.getOneByEmail(properties.email)
+                    .then(() => {
+                        // email is already taken, return error since it should be unique
+                        reject(new HttpError({ message: `email "${properties.email}" is already taken`, statusCode: 409 }));
+                    })
+                    .catch(() => {
+                        // username and email are not taken, process to user creation
+                        User.create(properties)
+                            .then(createdUser => {
+                                resolve(createdUser);
+                            })
+                            .catch(err => {
+                                console.error("ERROR", err);
+                                reject(new HttpError({ message: err.message, statusCode: 400 }));
+                            });
+                    })
+            })
     });
 }
 
