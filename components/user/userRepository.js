@@ -139,13 +139,36 @@ userRepo.update = (id, properties) => {
     return new Promise((resolve, reject) => {
         userRepo.getOne(id)
             .then(user => {
+                if (properties.password) {
+                    // hash clear text passed password
+                    bcrypt.hash(properties.password, saltRounds)
+                        .then(hash => {
+
+                            console.log("1 - hash:", hash);
+
+                            // replace passed clear text password by its hash
+                            properties.password = hash;
+
+                            resolve(user, properties);
+                        })
+                        .catch((err) => {
+                            reject(new HttpError({ message: err.message, statusCode: 500 }));
+                        });
+                }
+
+                console.log("2 - properties", properties);
+                
                 return user.update(properties);
             })
             .then(updatedUser => {
-                // exclude password property to be returned
-                delete updatedUser.dataValues.password;
+                // make a copy of createdUser instance to be able to delete password property
+                // avoiding password to be returned
+                let userCopy = Object.assign({}, updatedUser.dataValues);
+                delete userCopy.password;
 
-                resolve(updatedUser);
+                console.log("UPu", updatedUser);
+
+                resolve(userCopy);
             })
             .catch(err => {
                 console.log("ERROR", err);
