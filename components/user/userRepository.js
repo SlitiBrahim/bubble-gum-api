@@ -1,7 +1,9 @@
 const User = require('../../models/index').user;
 const HttpError = require('../../errors/HttpError');
+const bcrypt = require('bcrypt');
 
 const userRepo = {};
+const saltRounds = 10;
 
 userRepo.getAll = () => {
     return new Promise((resolve, reject) => {
@@ -88,13 +90,29 @@ userRepo.create = (properties) => {
                     })
                     .catch(() => {
                         // username and email are not taken, process to user creation
-                        User.create(properties)
-                            .then(createdUser => {
-                                resolve(createdUser);
+
+                        // hash clear text passed password
+                        bcrypt.hash(properties.password, saltRounds)
+                            .then(hash => {
+                            // replace passed clear text password by its hash
+                            properties.password = hash;
+
+                                User.create(properties)
+                                    .then(createdUser => {
+                                        // make a copy of createdUser instance to be able to delete password property
+                                        // avoiding password to be returned
+                                        let userCopy = Object.assign({}, createdUser.dataValues);
+                                        delete userCopy.password;
+
+                                        resolve(userCopy);
+                                    })
+                                    .catch(err => {
+                                        console.error("ERROR", err);
+                                        reject(new HttpError({ message: err.message, statusCode: 400 }));
+                                    });
                             })
                             .catch(err => {
-                                console.error("ERROR", err);
-                                reject(new HttpError({ message: err.message, statusCode: 400 }));
+                                reject(new HttpError({ message: err.message, statusCode: 500 }));
                             });
                     })
             })
