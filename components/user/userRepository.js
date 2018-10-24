@@ -3,7 +3,7 @@ const HttpError = require('../../errors/HttpError');
 const bcrypt = require('bcrypt');
 
 const userRepo = {};
-const saltRounds = 10;
+const hashCost = 10;
 
 userRepo.getAll = () => {
     return new Promise((resolve, reject) => {
@@ -92,10 +92,10 @@ userRepo.create = (properties) => {
                         // username and email are not taken, process to user creation
 
                         // hash clear text passed password
-                        bcrypt.hash(properties.password, saltRounds)
+                        bcrypt.hash(properties.password, hashCost)
                             .then(hash => {
-                            // replace passed clear text password by its hash
-                            properties.password = hash;
+                                // replace passed clear text password by its hash
+                                properties.password = hash;
 
                                 User.create(properties)
                                     .then(createdUser => {
