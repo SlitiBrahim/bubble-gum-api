@@ -140,25 +140,27 @@ userRepo.update = (id, properties) => {
         userRepo.getOne(id)
             .then(user => {
                 if (properties.password) {
+                    // save passed password in a constant
+                    const clearPassword = properties.password;
+                    // so we can delete it from properties object and avoid updating
+                    // user with clear text password, in the user.update(properties) outside of this if stmt
+                    delete properties.password;
+
                     // hash clear text passed password
-                    bcrypt.hash(properties.password, saltRounds)
-                        .then(hash => {
-
-                            console.log("1 - hash:", hash);
-
-                            // replace passed clear text password by its hash
-                            properties.password = hash;
-
-                            resolve(user, properties);
+                    bcrypt.hash(clearPassword, hashCost)
+                        .then((hash) => {
+                            return user.update({ password: hash });
                         })
-                        .catch((err) => {
+                        .catch(err => {
                             reject(new HttpError({ message: err.message, statusCode: 500 }));
                         });
                 }
-
-                console.log("2 - properties", properties);
                 
-                return user.update(properties);
+                // there are steel properties to update
+                if (properties) {
+                    // update all properties except password wich will be updated by the hash promise below 
+                    return user.update(properties);
+                }
             })
             .then(updatedUser => {
                 // make a copy of createdUser instance to be able to delete password property
@@ -166,13 +168,11 @@ userRepo.update = (id, properties) => {
                 let userCopy = Object.assign({}, updatedUser.dataValues);
                 delete userCopy.password;
 
-                console.log("UPu", updatedUser);
-
                 resolve(userCopy);
             })
             .catch(err => {
                 console.log("ERROR", err);
-                reject(err);
+                reject(new HttpError({ message: err.message, statusCode: 500 }));
             });
     });
 }
