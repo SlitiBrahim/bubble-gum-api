@@ -139,33 +139,41 @@ userRepo.update = (id, properties) => {
     return new Promise((resolve, reject) => {
         userRepo.getOne(id)
             .then(user => {
-                if (properties.password) {
-                    // save passed password in a constant
-                    const clearPassword = properties.password;
-                    // so we can delete it from properties object and avoid updating
-                    // user with clear text password, in the user.update(properties) outside of this if stmt
-                    delete properties.password;
+                // collection of promises to execute
+                const promises = [
+                    Promise.resolve(user)   // little trick to get a promise back resolving a user, in the promises array
+                ];
 
-                    // hash clear text passed password
-                    bcrypt.hash(clearPassword, hashCost)
-                        .then((hash) => {
-                            return user.update({ password: hash });
-                        })
-                        .catch(err => {
-                            reject(new HttpError({ message: err.message, statusCode: 500 }));
-                        });
+                // user prodvided a password
+                if (properties.password) {
+                    // add a promise of plain text password hashing task
+                    promises.push(bcrypt.hash(properties.password, hashCost));
                 }
-                
-                // there are steel properties to update
-                if (properties) {
-                    // update all properties except password wich will be updated by the hash promise below 
-                    return user.update(properties);
+
+                // return results of all promises once resolved
+                return Promise.all(promises);
+            })
+            .then(values => {
+                // values contains results of promises that have been resolved
+                const [user, encodedPassword] = values;
+
+                // got an encoded password
+                if (encodedPassword !== undefined) {
+                    // update all passed properties and overriding password property by the encoded password
+                    return user.update({
+                        ...properties,
+                        password: encodedPassword,
+                    });
                 }
+
+                // in case no password was provided, update all other properties
+                return user.update(properties);
             })
             .then(updatedUser => {
                 // make a copy of createdUser instance to be able to delete password property
                 // avoiding password to be returned
                 let userCopy = Object.assign({}, updatedUser.dataValues);
+
                 delete userCopy.password;
 
                 resolve(userCopy);
