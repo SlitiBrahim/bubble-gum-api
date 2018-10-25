@@ -144,6 +144,21 @@ userRepo.update = (id, properties) => {
                     Promise.resolve(user)   // little trick to get a promise back resolving a user, in the promises array
                 ];
 
+                if (properties.username) {
+                    userRepo.getOneByUsername(properties.username)
+                        .then(user => {
+                            // username is already taken
+                            reject(new HttpError({ message: `username "${properties.username}" is already taken`, statusCode: 409 }));
+                        });
+                }
+                if (properties.email) {
+                    userRepo.getOneByEmail(properties.email)
+                        .then(email => {
+                            // email is already taken
+                            reject(new HttpError({ message: `email "${properties.email}" is already taken`, statusCode: 409 }));
+                        });
+                }
+
                 // user prodvided a password
                 if (properties.password) {
                     // add a promise of plain text password hashing task
