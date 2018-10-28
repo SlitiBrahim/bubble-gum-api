@@ -36,7 +36,11 @@ router.route('/:id')
         const id = req.params.id;
         userRepo.getOne(id)
             .then(user => {
-                res.status(200).json(user);
+                if (user !== null) {
+                    res.status(200).json(user);
+                } else {
+                    res.status(404).json({ error: `User not found with id ${id}` });
+                }
             })
             .catch(err => {
                 res.status(err.statusCode).json({ error: err });

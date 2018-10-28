@@ -21,14 +21,7 @@ userRepo.getAll = () => {
 userRepo.getOne = (id) => {
     return new Promise((resolve, reject) => {
         User.findById(id)
-            .then(user => {
-                // user was not found, trigger catch statement
-                if (!user) {
-                    throw `User not found with id ${id}`;
-                }
-
-                resolve(user);
-            })
+            .then(user => resolve(user))
             .catch(err => {
                 console.error("ERROR", err);
                 reject(new HttpError({ message: `User not found with id ${id}`, statusCode: 404 }));
