@@ -5,9 +5,10 @@ const validate = require('express-validation');
 const userRepo = require('./userRepository');
 const validation = require('./userValidate');
 const controllerUtils = require('../../utils/controller');
+const verifyToken = require('../security/securityMiddleware').verifyToken;
 
 router.route('/')
-    .get((req, res) => {
+    .get(verifyToken, (req, res) => {
         userRepo.getAll()
             .then(users => {
                 res.status(200).json({ users })
@@ -32,7 +33,7 @@ router.route('/')
 ;
 
 router.route('/:id')
-    .get(validate(validation.getUser), (req, res) => {
+    .get(validate(validation.getUser), verifyToken, (req, res) => {
         const id = req.params.id;
         userRepo.getOne(id)
             .then(user => {
@@ -46,7 +47,7 @@ router.route('/:id')
                 res.status(err.statusCode).json({ error: err.message });
             });
     })
-    .delete(validate(validation.getUser), (req, res) => {
+    .delete(validate(validation.getUser), verifyToken, (req, res) => {
         const id = req.params.id;
         userRepo.delete(id)
             .then(deletedUser => {
@@ -56,7 +57,7 @@ router.route('/:id')
                 res.status(err.statusCode).json({ error: err.message });
             });
     })
-    .put(validate(validation.getUser), validate(validation.updateUser), (req, res) => {
+    .put(validate(validation.getUser), validate(validation.updateUser), verifyToken, (req, res) => {
         const id = req.params.id;
         const params = req.body;
         
