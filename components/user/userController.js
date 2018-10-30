@@ -13,7 +13,7 @@ router.route('/')
                 res.status(200).json({ users })
             })
             .catch(err => {
-                res.status(err.statusCode).json({ error: err });
+                res.status(err.statusCode).json({ error: err.message });
             });
     })
     .post(validate(validation.createUser), (req, res) => {
@@ -23,7 +23,7 @@ router.route('/')
                 res.status(201).json({ createdUser });
             })
             .catch(err => {
-                res.status(err.statusCode).json({ error : err });
+                res.status(err.statusCode).json({ error : err.message });
             });
     })
 
@@ -43,7 +43,7 @@ router.route('/:id')
                 }
             })
             .catch(err => {
-                res.status(err.statusCode).json({ error: err });
+                res.status(err.statusCode).json({ error: err.message });
             });
     })
     .delete(validate(validation.getUser), (req, res) => {
@@ -53,7 +53,7 @@ router.route('/:id')
                 res.status(200).json({ deletedUser });
             })
             .catch(err => {
-                res.status(err.statusCode).json({ error: err });
+                res.status(err.statusCode).json({ error: err.message });
             });
     })
     .put(validate(validation.getUser), validate(validation.updateUser), (req, res) => {
@@ -65,7 +65,7 @@ router.route('/:id')
                 res.status(200).json({ updatedUser });
             })
             .catch(err => {
-                res.status(err.statusCode).json({ error: err });
+                res.status(err.statusCode).json({ error: err.message });
             });
     })
 

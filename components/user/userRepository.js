@@ -13,7 +13,7 @@ userRepo.getAll = () => {
             })
             .catch(err => {
                 console.error("ERROR", err);
-                reject(new HttpError({ message: err.message, statusCode: 500 }));
+                reject(new HttpError({ message: `An error occured when finding all users`, statusCode: 500 }));
             })
     });
 }
