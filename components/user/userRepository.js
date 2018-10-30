@@ -51,16 +51,11 @@ userRepo.getOneByUsername = (username) => {
             where: { username }
         })
         .then(users => {
-            // check that a user is returned and not an empty array
-            if (users.length) {
-                // since username is unique, return the only one username
-                resolve(users[0]);
-            } else {
-                throw new HttpError({ message: `User not found with username ${username}`, statusCode: 404 });
-            }
+            resolve(users[0] || null);
         })
         .catch(err => {
-            reject(err);
+            console.log("ERROR", err);
+            reject(new HttpError({ message: `An error occured when findinf a user with username ${username}`, statusCode: 500 }));
         })
     });
 }
@@ -68,49 +63,53 @@ userRepo.getOneByUsername = (username) => {
 userRepo.create = (properties) => {
     return new Promise((resolve, reject) => {
         userRepo.getOneByUsername(properties.username)
-            .then(() => {
-                // username is already taken, return error since it should be unique
-                reject(new HttpError({ message: `username "${properties.username}" is already taken`, statusCode: 409 }));
+            .then(user => {
+                if (user) {
+                    // user already exists with that username, return error since it should be unique
+                    reject(new HttpError({ message: `username "${properties.username}" is already taken`, statusCode: 409 }));
+                } else {
+                    // username is not taken, process to email verification
+                    userRepo.getOneByEmail(properties.email)
+                        .then(user => {
+                            if (user) {
+                                // email is already taken, return error since it should be unique
+                                reject(new HttpError({ message: `email "${properties.email}" is already taken`, statusCode: 409 }));
+                            } else {
+                                // username and email are not taken, process to user creation
+                                // hash clear text passed password
+                                bcrypt.hash(properties.password, hashCost)
+                                    .then(hash => {
+                                        // replace passed clear text password by its hash
+                                        properties.password = hash;
+        
+                                        User.create(properties)
+                                            .then(createdUser => {
+                                                // make a copy of createdUser instance to be able to delete password property
+                                                // avoiding password to be returned
+                                                let userCopy = Object.assign({}, createdUser.dataValues);
+                                                delete userCopy.password;
+        
+                                                resolve(userCopy);
+                                            })
+                                            .catch(err => {
+                                                console.error("ERROR", err);
+                                                reject(new HttpError({ message: "An error occured when creating user", statusCode: 500 }));
+                                            });
+                                    })
+                                    .catch(err => {
+                                        console.log("ERROR", err);
+                                        reject(new HttpError({ message: `An error occored when hashing password`, statusCode: 500 }));
+                                    });
+                            }
+                        })
+                        .catch(err => {
+                            reject(err);
+                        });
+                }
             })
-            .catch(() => {
-                // username is not taken, process to email verification
-                userRepo.getOneByEmail(properties.email)
-                    .then(user => {
-                        if (user) {
-                            // email is already taken, return error since it should be unique
-                            reject(new HttpError({ message: `email "${properties.email}" is already taken`, statusCode: 409 }));
-                        } else {
-                            // username and email are not taken, process to user creation
-                            // hash clear text passed password
-                            bcrypt.hash(properties.password, hashCost)
-                                .then(hash => {
-                                    // replace passed clear text password by its hash
-                                    properties.password = hash;
-
-                                    User.create(properties)
-                                        .then(createdUser => {
-                                            // make a copy of createdUser instance to be able to delete password property
-                                            // avoiding password to be returned
-                                            let userCopy = Object.assign({}, createdUser.dataValues);
-                                            delete userCopy.password;
-
-                                            resolve(userCopy);
-                                        })
-                                        .catch(err => {
-                                            console.error("ERROR", err);
-                                            reject(new HttpError({ message: "An error occured when creating user", statusCode: 500 }));
-                                        });
-                                })
-                                .catch(err => {
-                                    console.log("ERROR", err);
-                                    reject(new HttpError({ message: `An error occored when hashing password`, statusCode: 500 }));
-                                });
-                        }
-                    })
-                    .catch(err => {
-                        reject(err);
-                    });
-            })
+            .catch(err => {
+                reject(err);
+            });
     });
 }
 
