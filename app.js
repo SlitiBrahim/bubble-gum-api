@@ -21,12 +21,15 @@ const postController = require('./components/post/postController');
 const voteController = require('./components/vote/voteController');
 const viewController = require('./components/view/viewController');
 const profileController = require('./components/profile/profileController');
+const securityController = require('./components/security/securityController');
 
 app.use('/users', userController);
 app.use('/posts', postController);
 app.use('/votes', voteController);
 app.use('/views', viewController);
 app.use('/profiles/', profileController);
+// login and register routes
+app.use(securityController);
 
 // In case a validation error was thrown or any controller was matched
 app.use((err, req, res, next) => {

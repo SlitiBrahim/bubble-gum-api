@@ -39,9 +39,9 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     // set deletedAt attribute when deleteing instance (softDeletable)
     paranoid: true,
-    defaultScope: {
-      attributes: { exclude: ['password'] }
-    }
+    // defaultScope: {
+    //   attributes: { exclude: ['password'] }
+    // }
   });
   user.associate = function(models) {
     // associations can be defined here

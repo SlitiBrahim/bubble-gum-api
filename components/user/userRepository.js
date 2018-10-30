@@ -53,10 +53,11 @@ userRepo.getOneByUsername = (username) => {
         User.findAll({
             where: { username }
         })
-        .then(user => {
+        .then(users => {
             // check that a user is returned and not an empty array
-            if (user.length) {
-                resolve(user);
+            if (users.length) {
+                // since username is unique, return the only one username
+                resolve(users[0]);
             } else {
                 throw new HttpError({ message: `User not found with username ${username}`, statusCode: 404 });
             }
@@ -189,6 +190,34 @@ userRepo.update = (id, properties) => {
             .catch(err => {
                 console.log("ERROR", err);
                 reject(new HttpError({ message: err.message, statusCode: 500 }));
+            });
+    });
+}
+
+userRepo.findOneByCredentials = (username, plainTextPassword) => {
+    return new Promise((resolve, reject) => {
+        userRepo.getOneByUsername(username)
+            .then(user => {
+                bcrypt.compare(plainTextPassword, user.password)
+                    .then(isValidCredentials => {
+                        if (isValidCredentials) {
+                            // Make a copy of user instance and return it without password property
+                            let userCopy = Object.assign({}, user.dataValues);
+                            delete userCopy.password;
+                            resolve(userCopy);
+                        } else {
+                            resolve(null);
+                        }
+                    })
+                    .catch(err => {
+                        console.log("ERR", err);
+                        throw new HttpError({ message: err.message, statusCode: 500 });
+                    });
+            })
+            .catch(() => {
+                // In case user was not found with the passed username, return "wrong credentials" message
+                // Don't return "username not found" to secure the api from bruteforce attacks
+                reject(new HttpError({ message: "Wrong credentials", statusCode: 401 }));
             });
     });
 }
