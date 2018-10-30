@@ -23,9 +23,9 @@ userRepo.getOne = (id) => {
         User.findById(id)
             .then(user => resolve(user))
             .catch(err => {
-                console.error("ERROR", err);
-                reject(new HttpError({ message: `User not found with id ${id}`, statusCode: 404 }));
-            })
+                console.log("ERROR", err);
+                reject(new HttpError({ message: `An error occured when finding a user with id ${id}`, statusCode: 500 }));
+            });
     });
 }
 
@@ -34,16 +34,13 @@ userRepo.getOneByEmail = (email) => {
         User.findAll({
             where: { email }
         })
-        .then(user => {
-            // check that a user is returned and not an empty array
-            if (user.length) {
-                resolve(user);
-            } else {
-                throw new HttpError({ message: `User not found with email ${email}`, statusCode: 404 });
-            }
+        .then(users => {
+            // resolve with user if existing or resolve with null
+            resolve(users[0] || null);
         })
         .catch(err => {
-            reject(err);
+            console.log("ERROR", err);
+            reject(new HttpError({ message: `An error occured when finding a user with email ${email}`, statusCode: 500 }));
         })
     });
 }
@@ -78,37 +75,41 @@ userRepo.create = (properties) => {
             .catch(() => {
                 // username is not taken, process to email verification
                 userRepo.getOneByEmail(properties.email)
-                    .then(() => {
-                        // email is already taken, return error since it should be unique
-                        reject(new HttpError({ message: `email "${properties.email}" is already taken`, statusCode: 409 }));
+                    .then(user => {
+                        if (user) {
+                            // email is already taken, return error since it should be unique
+                            reject(new HttpError({ message: `email "${properties.email}" is already taken`, statusCode: 409 }));
+                        } else {
+                            // username and email are not taken, process to user creation
+                            // hash clear text passed password
+                            bcrypt.hash(properties.password, hashCost)
+                                .then(hash => {
+                                    // replace passed clear text password by its hash
+                                    properties.password = hash;
+
+                                    User.create(properties)
+                                        .then(createdUser => {
+                                            // make a copy of createdUser instance to be able to delete password property
+                                            // avoiding password to be returned
+                                            let userCopy = Object.assign({}, createdUser.dataValues);
+                                            delete userCopy.password;
+
+                                            resolve(userCopy);
+                                        })
+                                        .catch(err => {
+                                            console.error("ERROR", err);
+                                            reject(new HttpError({ message: "An error occured when creating user", statusCode: 500 }));
+                                        });
+                                })
+                                .catch(err => {
+                                    console.log("ERROR", err);
+                                    reject(new HttpError({ message: `An error occored when hashing password`, statusCode: 500 }));
+                                });
+                        }
                     })
-                    .catch(() => {
-                        // username and email are not taken, process to user creation
-
-                        // hash clear text passed password
-                        bcrypt.hash(properties.password, hashCost)
-                            .then(hash => {
-                                // replace passed clear text password by its hash
-                                properties.password = hash;
-
-                                User.create(properties)
-                                    .then(createdUser => {
-                                        // make a copy of createdUser instance to be able to delete password property
-                                        // avoiding password to be returned
-                                        let userCopy = Object.assign({}, createdUser.dataValues);
-                                        delete userCopy.password;
-
-                                        resolve(userCopy);
-                                    })
-                                    .catch(err => {
-                                        console.error("ERROR", err);
-                                        reject(new HttpError({ message: err.message, statusCode: 400 }));
-                                    });
-                            })
-                            .catch(err => {
-                                reject(new HttpError({ message: err.message, statusCode: 500 }));
-                            });
-                    })
+                    .catch(err => {
+                        reject(err);
+                    });
             })
     });
 }
@@ -147,9 +148,14 @@ userRepo.update = (id, properties) => {
                 }
                 if (properties.email) {
                     userRepo.getOneByEmail(properties.email)
-                        .then(email => {
-                            // email is already taken
-                            reject(new HttpError({ message: `email "${properties.email}" is already taken`, statusCode: 409 }));
+                        .then(user => {
+                            if (user) {
+                                // a user is already existing with that email
+                                reject(new HttpError({ message: `email "${properties.email}" is already taken`, statusCode: 409 }));
+                            }
+                        })
+                        .catch(err => {
+                            reject(err);
                         });
                 }
 
