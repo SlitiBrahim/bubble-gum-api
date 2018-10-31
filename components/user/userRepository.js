@@ -83,14 +83,7 @@ userRepo.create = (properties) => {
                                         properties.password = hash;
         
                                         User.create(properties)
-                                            .then(createdUser => {
-                                                // make a copy of createdUser instance to be able to delete password property
-                                                // avoiding password to be returned
-                                                let userCopy = Object.assign({}, createdUser.dataValues);
-                                                delete userCopy.password;
-        
-                                                resolve(userCopy);
-                                            })
+                                            .then(createdUser => resolve(createdUser))
                                             .catch(err => {
                                                 console.error("ERROR", err);
                                                 reject(new HttpError({ message: "An error occured when creating user", statusCode: 500 }));
@@ -183,15 +176,7 @@ userRepo.update = (id, properties) => {
                 // in case no password was provided, update all other properties
                 return user.update(properties);
             })
-            .then(updatedUser => {
-                // make a copy of createdUser instance to be able to delete password property
-                // avoiding password to be returned
-                let userCopy = Object.assign({}, updatedUser.dataValues);
-
-                delete userCopy.password;
-
-                resolve(userCopy);
-            })
+            .then(updatedUser => resolve(updatedUser))
             .catch(err => {
                 console.log("ERROR", err);
                 reject(new HttpError({ message: err.message, statusCode: 500 }));
@@ -206,10 +191,7 @@ userRepo.findOneByCredentials = (username, plainTextPassword) => {
                 bcrypt.compare(plainTextPassword, user.password)
                     .then(isValidCredentials => {
                         if (isValidCredentials) {
-                            // Make a copy of user instance and return it without password property
-                            let userCopy = Object.assign({}, user.dataValues);
-                            delete userCopy.password;
-                            resolve(userCopy);
+                            resolve(user);
                         } else {
                             resolve(null);
                         }
