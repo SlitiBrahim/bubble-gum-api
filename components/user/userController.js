@@ -17,16 +17,6 @@ router.route('/')
                 res.status(err.statusCode).json({ error: err.message });
             });
     })
-    .post(validate(validation.createUser), (req, res) => {
-        const params = req.body;
-        userRepo.create(params)
-            .then(createdUser => {
-                res.status(201).json({ createdUser });
-            })
-            .catch(err => {
-                res.status(err.statusCode).json({ error : err.message });
-            });
-    })
 
     // In case method was not matched (= method not allowed)
     .all((req, res) => controllerUtils.methodNotAllowed(req, res, router))

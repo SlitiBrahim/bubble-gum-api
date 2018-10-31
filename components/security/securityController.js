@@ -7,6 +7,7 @@ const config = require('../../config/config');
 const appSecret = config.secret;
 const userRepo = require('../user/userRepository');
 const validation = require('./securityValidate');
+const userValidation = require('../user/userValidate');
 
 router.post('/login', validate(validation.login), (req, res) => {
     const { username, password } = req.body;
@@ -30,6 +31,18 @@ router.post('/login', validate(validation.login), (req, res) => {
         })
         .catch(err => {
             res.status(err.statusCode).json({ error: "Wrong credentials" });
+        });
+});
+
+router.post('/register', validate(userValidation.createUser), (req, res) => {
+    const params = req.body;
+
+    userRepo.create(params)
+        .then(createdUser => {
+            res.status(201).json({ createdUser });
+        })
+        .catch(err => {
+            res.status(err.statusCode).json({ error : err.message });
         });
 });
 
