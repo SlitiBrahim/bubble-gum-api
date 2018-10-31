@@ -7,8 +7,11 @@ const middleware = {
     verifyToken: (req, res, next) => {
         // Authorization header holding the token
         const bearerHeader = req.headers['Authorization'] || req.headers['authorization'];
-        // Authorization token was provided
-        if (typeof bearerHeader !== 'undefined') {
+        // Bearer Header regex
+        const tokenRegex = /^Bearer (([a-zA-Z0-9_-]*)+\.){2}([a-zA-Z0-9_-]*)+$/;
+        // Authorization token was provided and it is bearer header template based
+        if (typeof bearerHeader !== 'undefined' && tokenRegex.test(bearerHeader) === true) {
+            // Authorization header representation: "Bearer <token>"
             const token = bearerHeader.split(' ')[1];
 
             jwt.verify(token, appSecret, (err, decoded) => {
