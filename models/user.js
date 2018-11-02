@@ -50,7 +50,10 @@ module.exports = (sequelize, DataTypes) => {
   user.prototype.toJSON = function() {
     var values = Object.assign({}, this.get());
 
+    // removing properties that should not be returned
     delete values.password;
+    delete values.isDeleted;
+
     return values;
   }
 
