@@ -31,21 +31,20 @@ app.use('/profiles/', profileController);
 // login and register routes
 app.use(securityController);
 
+app.use((req, res) => {
+    // return json error
+    res.status(404).json({
+        message: "No route found for this resource or the HTTP verb is invalid, please refer to the documentation."
+    });
+});
+
 // In case a validation error was thrown or any controller was matched
 app.use((err, req, res, next) => {
-
     // validation error(s)
     if (err instanceof expressValidation.ValidationError) {
-
         // return error object containing all validation errors
         res.status(err.status).json(err);
-    } else {
-        // return json error
-        res.status(404).json({
-            message: "No route found for this resource or the HTTp verb is invalid, please refer to the documentation."
-        });
     }
-
 });
 
 module.exports = app;
