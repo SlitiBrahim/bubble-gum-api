@@ -134,8 +134,10 @@ userRepo.update = (id, properties) => {
                 if (properties.username) {
                     userRepo.getOneByUsername(properties.username)
                         .then(user => {
-                            // username is already taken
-                            reject(new HttpError({ message: `username "${properties.username}" is already taken`, statusCode: 409 }));
+                            if (user) {
+                                // username is already taken
+                                reject(new HttpError({ message: `username "${properties.username}" is already taken`, statusCode: 409 }));
+                            }
                         });
                 }
                 if (properties.email) {
