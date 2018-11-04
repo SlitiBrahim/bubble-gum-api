@@ -6,7 +6,7 @@
 */
 
 module.exports = (sequelize, DataTypes) => {
-  const user = sequelize.define('user', {
+  const User = sequelize.define('user', {
     email: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -43,11 +43,11 @@ module.exports = (sequelize, DataTypes) => {
     //   attributes: { exclude: ['password'] }
     // }
   });
-  user.associate = function(models) {
+  User.associate = function(models) {
     // associations can be defined here
   };
 
-  user.prototype.toJSON = function() {
+  User.prototype.toJSON = function() {
     var values = Object.assign({}, this.get());
 
     // removing properties that should not be returned
@@ -57,5 +57,5 @@ module.exports = (sequelize, DataTypes) => {
     return values;
   }
 
-  return user;
+  return User;
 };
