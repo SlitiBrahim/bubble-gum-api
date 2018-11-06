@@ -12,7 +12,7 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'users',
+          model: 'user',
           key: 'id'
         }
       },
@@ -36,17 +36,12 @@ module.exports = {
       }
     })
     .then(() => {
-<<<<<<< HEAD
       // add a foreign key on user table referencing profile table
       return queryInterface.addConstraint('user', ['profileId'], {
-=======
-      // add a foreign key on users table referencing profiles table
-      return queryInterface.addConstraint('users', ['profileId'], {
->>>>>>> parent of 3e083a2... FIX: Renaming missing occurences to table names in the plural
         type: 'FOREIGN KEY',
-        name: 'FK_profileId_users',
+        name: 'FK_profileId_user',
         references: {
-          table: 'profiles',
+          table: 'profile',
           field: 'id'
         }
       });
