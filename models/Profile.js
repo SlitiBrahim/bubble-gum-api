@@ -19,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         website: {
             type: DataTypes.STRING
+        },
+        createdAt: {
+            allowNull: false,
+            type: DataTypes.DATE
         }
     }, {
         paranoid: true,

@@ -33,6 +33,10 @@ module.exports = {
       },
       website: {
           type: Sequelize.STRING
+      },
+      createdAt: {
+          allowNull: false,
+          type: Sequelize.DATE
       }
     })
     .then(() => {
