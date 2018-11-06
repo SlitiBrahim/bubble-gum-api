@@ -36,7 +36,7 @@ module.exports = {
       }
     })
     .then(() => {
-      // add a foreign key on users table referencing profiles table
+      // add a foreign key on user table referencing profile table
       return queryInterface.addConstraint('user', ['profileId'], {
         type: 'FOREIGN KEY',
         name: 'FK_profileId_user',
@@ -49,6 +49,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('profiles');
+    return queryInterface.dropTable('profile');
   }
 };
