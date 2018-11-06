@@ -21,7 +21,8 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING
         }
     }, {
-        paranoid: true
+        paranoid: true,
+        tableName: 'profile'
     });
 
     Profile.associate = function(models) {
