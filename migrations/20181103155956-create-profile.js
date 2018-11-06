@@ -12,7 +12,7 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'users',
+          model: 'user',
           key: 'id'
         }
       },
@@ -37,11 +37,11 @@ module.exports = {
     })
     .then(() => {
       // add a foreign key on users table referencing profiles table
-      return queryInterface.addConstraint('users', ['profileId'], {
+      return queryInterface.addConstraint('user', ['profileId'], {
         type: 'FOREIGN KEY',
-        name: 'FK_profileId_users',
+        name: 'FK_profileId_user',
         references: {
-          table: 'profiles',
+          table: 'profile',
           field: 'id'
         }
       });
